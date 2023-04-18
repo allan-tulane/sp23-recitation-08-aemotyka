@@ -5,7 +5,6 @@ test_cases = [('book', 'back'), ('kookaburra', 'kookybird'), ('elephant', 'relev
 alignments = [('book', 'back'), ('kookaburra', 'kookybird-'), ('relev-ant','-elephant'), ('AAAGAATTCA', 'AAA---T-CA')]
 
 def MED(S, T):
-    # TO DO - modify to account for insertions, deletions and substitutions
     if (S == ""):
         return(len(T))
     elif (T == ""):
@@ -18,12 +17,50 @@ def MED(S, T):
 
 
 def fast_MED(S, T, MED={}):
-    # TODO -  implement memoization
-    pass
+    if (S, T) in MED:
+      return MED[(S, T)]
+    if (T, S) in MED:
+      return MED[(T, S)]
+
+    if (S == ""): #S is empty, number of operations required is the remaining length of T
+      return(len(T))
+    elif (T == ""): #same as above but switch S and T
+      return(len(S))
+    else:
+      if (S[0] == T[0]): #entries are equal, no operation required
+        return fast_MED(S[1:], T[1:], MED)
+      else:
+        replace = fast_MED(S[1:], T[1:], MED)
+        insert = fast_MED(S, T[1:], MED)
+        delete = fast_MED(S[1:], T, MED)
+        result = 1 + min(insert, delete, replace)
+        
+    MED[(S, T)] = result
+    return result
 
 def fast_align_MED(S, T, MED={}):
-    # TODO - keep track of alignment
-    pass
+    if (S == ""):
+        return ('-' * len(T), T)
+    elif (T == ""):
+        return (S, '-' * len(S))
+    else:
+      if (S[0] == T[0]):
+        align = fast_align_MED(S[1:], T[1:], MED)
+        return (S[0] + align, T[0] + align)
+      else:
+        replace = fast_MED(S[1:], T[1:], MED)
+        insert = fast_MED(S, T[1:], MED)
+        delete = fast_MED(S[1:], T, MED)
+
+        if (min(replace, insert, delete) == replace):
+            align = fast_align_MED(S[1:], T[1:], MED)
+            return (S[0] + align, T[0] + align)
+        elif (min(replace, insert, delete) == insert):
+            align = fast_align_MED(S, T[1:], MED)
+            return ('-' + align, T[0] + align)
+        elif (min(replace, insert, delete) == delete):
+            align = fast_align_MED(S[1:], T, MED)
+            return (S[0] + align, '-' + align)
 
 def test_MED():
     for S, T in test_cases:
