@@ -30,9 +30,9 @@ def fast_MED(S, T, MED={}):
       if (S[0] == T[0]): #entries are equal, no operation required
         return fast_MED(S[1:], T[1:], MED)
       else:
-        replace = fast_MED(S[1:], T[1:], MED)
         insert = fast_MED(S, T[1:], MED)
         delete = fast_MED(S[1:], T, MED)
+        replace = fast_MED(S[1:], T[1:], MED)
         result = 1 + min(insert, delete, replace)
         
     MED[(S, T)] = result
@@ -48,19 +48,19 @@ def fast_align_MED(S, T, MED={}):
         align = fast_align_MED(S[1:], T[1:], MED)
         return (S[0] + align, T[0] + align)
       else:
-        replace = fast_MED(S[1:], T[1:], MED)
         insert = fast_MED(S, T[1:], MED)
         delete = fast_MED(S[1:], T, MED)
+        replace = fast_MED(S[1:], T[1:], MED)
 
-        if (min(replace, insert, delete) == replace):
-            align = fast_align_MED(S[1:], T[1:], MED)
-            return (S[0] + align, T[0] + align)
-        elif (min(replace, insert, delete) == insert):
+        if (min(replace, insert, delete) == insert):
             align = fast_align_MED(S, T[1:], MED)
             return ('-' + align, T[0] + align)
         elif (min(replace, insert, delete) == delete):
             align = fast_align_MED(S[1:], T, MED)
             return (S[0] + align, '-' + align)
+        elif (min(replace, insert, delete) == replace):
+            align = fast_align_MED(S[1:], T[1:], MED)
+            return (S[0] + align, T[0] + align)
 
 def test_MED():
     for S, T in test_cases:
