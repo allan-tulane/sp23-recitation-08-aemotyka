@@ -39,6 +39,11 @@ def fast_MED(S, T, MED={}):
     return result
 
 def fast_align_MED(S, T, MED={}):
+    if (S, T) in MED:
+      return MED[(S, T)]
+    if (T, S) in MED:
+      return MED[(T, S)]
+    
     if (S == ""):
         return ('-' * len(T), T)
     elif (T == ""):
